@@ -1,0 +1,29 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+  branches:
+    include:
+      - master
+
+pr:
+  branches:
+    include:
+      - main
+
+jobs:
+- job: InitiatePullRequest
+  displayName: 'Initiate Pull Request'
+  steps:
+  - checkout: self
+  - script: |
+      git checkout -b feature/$(Build.BuildId)
+      git add .
+      git commit -m "Initiating pull request"
+      git push origin feature/$(Build.BuildId)
+    displayName: 'Create and push branch'
+  - script: |
+      az repos pr create --repository my-repo --source-branch feature/$(Build.BuildId) --target-branch main --title "Pull Request from feature/$(Build.BuildId)"
+    displayName: 'Create pull request'
