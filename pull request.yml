@@ -1,0 +1,58 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- master # Define the branch that triggers the pipeline
+
+pr:
+- '*'
+
+pr:
+- '*'
+
+pool:
+  vmImage: 'windows-latest' # Use an appropriate agent image
+
+variables:
+  # Define your variables here
+  githubRepoUrl: 'https://github.com/your-organization/your-repo'
+  githubAccessToken: $(GitHubAccessToken) # Make sure to set this secret variable in your pipeline
+
+steps:
+- script: |
+    # Authenticate with GitHub using a Personal Access Token (PAT)
+    git config --global user.email "kireethikaias@gmail.com"
+    git config --global user.name "keerthiga"
+    git config --global credential.helper "store --file=/tmp/creds"
+
+    echo "machine github.com login $(githubAccessToken) password x-oauth-basic" > /tmp/creds
+
+    # Clone the GitHub repository
+    git clone $(githubRepoUrl) repo
+    cd repo
+
+    # Create a new branch for your changes
+    git checkout -b feature-branch
+
+
+    # Commit your changes
+    git add .
+    git commit -m "Add feature or fix"
+
+    # Push the changes to GitHub
+    git push origin feature-branch
+
+    # Create a pull request
+    pr_url=$(curl -X POST -H "Authorization: token $(githubAccessToken)" -d '{
+        "title": "Feature or Fix Pull Request",
+        "head": "feature-branch",
+        "base": "master"
+    }' https://api.github.com/repos/your-organization/your-repo/pulls | jq -r '.html_url')
+
+    echo "Pull Request URL: $pr_url"
+
+  displayName: 'Create Pull Request'
+
+# Define additional steps as needed for your build and testing process
