@@ -9,15 +9,13 @@ trigger:
 pr:
 - '*'
 
-pr:
-- '*'
 
 pool:
-  vmImage: 'windows-latest' # Use an appropriate agent image
+  vmImage: 'windows-latest' 
 
 variables:
   # Define your variables here
-  githubRepoUrl: 'https://github.com/your-organization/your-repo'
+  githubRepoUrl: 'https://github.com/your-organization/DemoProject'
   githubAccessToken: $(GitHubAccessToken) # Make sure to set this secret variable in your pipeline
 
 steps:
